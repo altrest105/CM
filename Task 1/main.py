@@ -63,12 +63,12 @@ class ShellEmulator:
 
     # Команда pwd
     def command_pwd(self):
-        print(self.current_dir if self.current_dir else f"/{self.username}")
+        print(f'/{self.current_dir[:-1]}' if self.current_dir else f"/{self.username}")
 
 
 # Проверяем, что переданы аргументы
 if len(sys.argv) != 3:
-    print("Использование: py <название программы.py> <имя_пользователя> <путь_к_архиву.zip>")
+    print("Использование: py <название_программы.py> <имя_пользователя> <путь_к_архиву.zip>")
     sys.exit(1)
 
 username = sys.argv[1]
