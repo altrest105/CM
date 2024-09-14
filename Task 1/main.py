@@ -9,6 +9,7 @@ class ShellEmulator:
         self.username = username
         self.zip_path = zip_path
         self.current_dir = ""
+        self.all_files = (zipfile.ZipFile(zip_path, 'r')).namelist()
         if username == 'root':
             self.root = '#'
         else:
@@ -31,35 +32,29 @@ class ShellEmulator:
 
     # Команда ls
     def command_ls(self):
-        with zipfile.ZipFile(self.zip_path, 'r') as zip:
-            all_files = zip.namelist()
+        files = {item.replace(self.current_dir, '', 1).split('/')[0] for item in self.all_files if item.startswith(self.current_dir)}
 
-            files = {item.replace(self.current_dir, '', 1).split('/')[0] for item in all_files if item.startswith(self.current_dir)}
-
-            for item in sorted(files, reverse = True):
-                file_extension = '.' + item.split('.')[-1] if '.' in item else ''
-                color = self.get_color_for_extension(file_extension)
-                print(f"{color}{item}\033[0m")
+        for item in sorted(files, reverse = True):
+            file_extension = '.' + item.split('.')[-1] if '.' in item else ''
+            color = self.get_color_for_extension(file_extension)
+            print(f"{color}{item}\033[0m")
 
     # Команда cd
     def command_cd(self, path=''):
-        with zipfile.ZipFile(self.zip_path, 'r') as zip:
-            all_files = zip.namelist()
+        # Если нет аргументов, переходим в домашнюю директорию
+        if path == '':
+            self.current_dir = ''
+            return
 
-            # Если нет аргументов, переходим в домашнюю директорию
-            if path == '':
-                self.current_dir = ''
-                return
-
-            # Определяем целевой путь
-            if (path.startswith("/")) and (path in all_files) and (path.split('.')[-1] not in extensions): # Абсолютный путь с / в начале
-                target_dir = f"{path}/"
-                self.current_dir = target_dir
-            elif (path.split('.')[-1] not in extensions) and ('/' not in path) and (f'{self.current_dir}{path}/' in all_files): # Перейти в папку в текущей директории
-                target_dir = f'{self.current_dir}{path}/'
-                self.current_dir = target_dir
-            else:
-                print(f'Ошибка: {path} не является директорией')
+        # Определяем целевой путь
+        if (path.startswith("/")) and (path in self.all_files) and (path.split('.')[-1] not in extensions): # Абсолютный путь с / в начале
+            target_dir = f"{path}/"
+            self.current_dir = target_dir
+        elif (path.split('.')[-1] not in extensions) and ('/' not in path) and (f'{self.current_dir}{path}/' in self.all_files): # Перейти в папку в текущей директории
+            target_dir = f'{self.current_dir}{path}/'
+            self.current_dir = target_dir
+        else:
+            print(f'Ошибка: {path} не является директорией')
 
     # Команда pwd
     def command_pwd(self):
