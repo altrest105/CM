@@ -10,6 +10,7 @@ class ShellEmulator:
         self.zip_path = zip_path
         self.current_dir = ''
         self.all_files = (zipfile.ZipFile(zip_path, 'r')).namelist()
+        self.file_owners = {file: 'root' for file in self.all_files}
         if username == 'root':
             self.root = '#'
         else:
@@ -60,6 +61,17 @@ class ShellEmulator:
     def command_pwd(self):
         print(f'/{self.current_dir[:-1]}' if self.current_dir else f'/{self.username}')
 
+    #Команда chown
+    def command_chown(self, new_owner, path):
+        abs_path = f'{self.current_dir}{path}/' if not path.startswith('/') else f'{path[1:]}/'
+
+        if abs_path in self.file_owners:
+            self.file_owners[abs_path] = new_owner
+            print(f'Владелец {abs_path[:-1]} сменён на {new_owner}')
+        else:
+            print(f'Ошибка: {path} не существует')
+
+
 
 # Проверяем, что переданы аргументы
 if len(sys.argv) != 3:
@@ -91,6 +103,12 @@ while True:
 
     elif cmd_name == 'exit':
         exit()
+
+    elif cmd_name == 'chown':
+        if len(command) == 3:
+            shell.command_chown(command[1], command[2])
+        else:
+            print('Использование: chown <новый_владелец> <файл>')
 
     else:
         print('Неизвестная команда, попробуйте снова!')
