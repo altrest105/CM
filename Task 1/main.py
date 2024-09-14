@@ -8,7 +8,7 @@ class ShellEmulator:
     def __init__(self, username, zip_path):
         self.username = username
         self.zip_path = zip_path
-        self.current_dir = ""
+        self.current_dir = ''
         self.all_files = (zipfile.ZipFile(zip_path, 'r')).namelist()
         if username == 'root':
             self.root = '#'
@@ -37,7 +37,7 @@ class ShellEmulator:
         for item in sorted(files, reverse = True):
             file_extension = '.' + item.split('.')[-1] if '.' in item else ''
             color = self.get_color_for_extension(file_extension)
-            print(f"{color}{item}\033[0m")
+            print(f'{color}{item}\033[0m')
 
     # Команда cd
     def command_cd(self, path=''):
@@ -47,8 +47,8 @@ class ShellEmulator:
             return
 
         # Определяем целевой путь
-        if (path.startswith("/")) and (path in self.all_files) and (path.split('.')[-1] not in extensions): # Абсолютный путь с / в начале
-            target_dir = f"{path}/"
+        if (path.startswith('/')) and (f'{path[1:]}/' in self.all_files) and (path.split('.')[-1] not in extensions): # Абсолютный путь с / в начале
+            target_dir = f'{path[1:]}/'
             self.current_dir = target_dir
         elif (path.split('.')[-1] not in extensions) and ('/' not in path) and (f'{self.current_dir}{path}/' in self.all_files): # Перейти в папку в текущей директории
             target_dir = f'{self.current_dir}{path}/'
@@ -58,12 +58,12 @@ class ShellEmulator:
 
     # Команда pwd
     def command_pwd(self):
-        print(f'/{self.current_dir[:-1]}' if self.current_dir else f"/{self.username}")
+        print(f'/{self.current_dir[:-1]}' if self.current_dir else f'/{self.username}')
 
 
 # Проверяем, что переданы аргументы
 if len(sys.argv) != 3:
-    print("Использование: py <название_программы.py> <имя_пользователя> <путь_к_архиву.zip>")
+    print('Использование: py <название_программы.py> <имя_пользователя> <путь_к_архиву.zip>')
     sys.exit(1)
 
 username = sys.argv[1]
@@ -72,7 +72,7 @@ shell = ShellEmulator(username, zip_path)
 
 # Ввод команд
 while True:
-    command = input(f"{shell.username}@localhost:~/{shell.current_dir}{shell.root} ").split()
+    command = input(f'{shell.username}@localhost:~/{shell.current_dir}{shell.root} ').split()
     if not command:
         continue  # Пустая строка
     cmd_name = command[0]
