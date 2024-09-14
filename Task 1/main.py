@@ -8,8 +8,9 @@ class ShellEmulator:
     def __init__(self, username, zip_path):
         self.username = username
         self.zip_path = zip_path
+        self.archive = zipfile.ZipFile(zip_path, 'r')
         self.current_dir = ''
-        self.all_files = (zipfile.ZipFile(zip_path, 'r')).namelist()
+        self.all_files = self.archive.namelist()
         self.file_owners = {file: 'root' for file in self.all_files}
         if username == 'root':
             self.root = '#'
@@ -46,16 +47,13 @@ class ShellEmulator:
         if path == '':
             self.current_dir = ''
             return
-
+        
+        abs_path = f'{self.current_dir}{path}/' if not path.startswith('/') else f'{path[1:]}/'
         # Определяем целевой путь
-        if (path.startswith('/')) and (f'{path[1:]}/' in self.all_files) and (path.split('.')[-1] not in extensions): # Абсолютный путь с / в начале
-            target_dir = f'{path[1:]}/'
-            self.current_dir = target_dir
-        elif (path.split('.')[-1] not in extensions) and ('/' not in path) and (f'{self.current_dir}{path}/' in self.all_files): # Перейти в папку в текущей директории
-            target_dir = f'{self.current_dir}{path}/'
-            self.current_dir = target_dir
+        if abs_path in self.all_files:
+            self.current_dir = abs_path
         else:
-            print(f'Ошибка: {path} не является директорией')
+            print(f'Ошибка: Неправильный путь {path}')
 
     # Команда pwd
     def command_pwd(self):
@@ -69,9 +67,27 @@ class ShellEmulator:
             self.file_owners[abs_path] = new_owner
             print(f'Владелец {abs_path[:-1]} сменён на {new_owner}')
         else:
-            print(f'Ошибка: {path} не существует')
+            print(f'Ошибка: Неправильный путь {path}')
 
+    #Команда uniq
+    def command_uniq(self, path):
+        abs_path = f'{self.current_dir}{path}' if not path.startswith('/') else f'{path[1:]}'
 
+        if (abs_path in self.all_files) and (abs_path.split('.')[-1] == 'txt'):
+            with self.archive.open(abs_path) as file:
+                lines = file.readlines()
+                unique_lines = []
+                previous_line = None
+
+                for line in lines:
+                    if line != previous_line:
+                        unique_lines.append(line)
+                        previous_line = line
+
+                for unique_line in unique_lines:
+                    print(unique_line.decode('utf8').strip())
+        else:
+            print(f'Ошибка: Неправильный путь {path}')
 
 # Проверяем, что переданы аргументы
 if len(sys.argv) != 3:
@@ -109,6 +125,12 @@ while True:
             shell.command_chown(command[1], command[2])
         else:
             print('Использование: chown <новый_владелец> <файл>')
+
+    elif cmd_name == 'uniq':
+        if len(command) == 2:
+            shell.command_uniq(command[1])
+        else:
+            print('Использование: uniq <файл>')
 
     else:
         print('Неизвестная команда, попробуйте снова!')
