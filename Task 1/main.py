@@ -1,8 +1,6 @@
 import zipfile
 import sys
 
-extensions = ['txt', 'py', 'jpg', 'png', 'zip', 'exe']
-
 class ShellEmulator:
     # Конструктор
     def __init__(self, username, zip_path):
@@ -20,14 +18,14 @@ class ShellEmulator:
     # Получение цвета по расширению файла
     def get_color_for_extension(self, extension):
         extension_colors = {
-            '.txt': '\033[94m', # OKBLUE
-            '.py': '\033[92m', # OKGREEN
-            '.jpg': '\033[93m', # WARNING
-            '.png': '\033[93m', # WARNING
-            '.zip': '\033[91m', # FAIL
-            '.exe': '\033[96m', # OKCYAN
-            '.pdf': '\033[95m', # HEADER
-            '.docx': '\033[95m', # HEADER
+            'txt': '\033[94m', # OKBLUE
+            'py': '\033[92m', # OKGREEN
+            'jpg': '\033[93m', # WARNING
+            'png': '\033[93m', # WARNING
+            'zip': '\033[91m', # FAIL
+            'exe': '\033[96m', # OKCYAN
+            'pdf': '\033[95m', # HEADER
+            'docx': '\033[95m', # HEADER
             '': '\033[1m', # BOLD
         }
         return extension_colors.get(extension, '\033[0m')
@@ -37,9 +35,12 @@ class ShellEmulator:
         files = {item.replace(self.current_dir, '', 1).split('/')[0] for item in self.all_files if item.startswith(self.current_dir)}
 
         for item in sorted(files, reverse = True):
-            file_extension = '.' + item.split('.')[-1] if '.' in item else ''
+            file_extension = item.split('.')[-1] if '.' in item else ''
             color = self.get_color_for_extension(file_extension)
-            print(f'{color}{item}\033[0m')
+            own = self.file_owners.get(f'{self.current_dir}{item}')
+            owner = own if own is not None else self.file_owners.get(f'{self.current_dir}{item}/')
+            if item != '':
+                print(f'{color}{item}\033[0m (owner: {owner})')
 
     # Команда cd
     def command_cd(self, path=''):
@@ -65,6 +66,9 @@ class ShellEmulator:
 
         if abs_path in self.file_owners:
             self.file_owners[abs_path] = new_owner
+            print(f'Владелец {abs_path[:-1]} сменён на {new_owner}')
+        elif abs_path[:-1] in self.file_owners:
+            self.file_owners[abs_path[:-1]] = new_owner
             print(f'Владелец {abs_path[:-1]} сменён на {new_owner}')
         else:
             print(f'Ошибка: Неправильный путь {path}')
