@@ -108,21 +108,32 @@ while True:
     if not command:
         continue  # Пустая строка
     cmd_name = command[0]
-        
+
     if cmd_name == 'ls':
-        shell.command_ls()
+        if len(command) == 1:
+            shell.command_ls()
+        else:
+            print('Использование: ls')
 
     elif cmd_name == 'cd':
         if len(command) == 1:
             shell.command_cd()
-        else:
+        elif len(command) == 2:
             shell.command_cd(' '.join(command[1:]).rstrip())
+        else:
+            print('Использование: cd <папка_назначения>')
 
     elif cmd_name == 'pwd':
-        shell.command_pwd()
+        if len(command) == 1:
+            shell.command_pwd()
+        else:
+            print('Использование: pwd')
 
     elif cmd_name == 'exit':
-        exit()
+        if len(command) == 1:
+            exit()
+        else:
+            print('Использование: exit')
 
     elif cmd_name == 'chown':
         if len(command) == 3:
