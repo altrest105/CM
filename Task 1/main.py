@@ -9,9 +9,11 @@ class ShellEmulator:
     def __init__(self, username, zip_path):
         self.username = username
         self.zip_path = zip_path
-        self.archive = zipfile.ZipFile(zip_path, 'r')
+        with zipfile.ZipFile(self.zip_path, 'r') as zip_file:
+            self.archive = zip_file
+            self.all_files = zip_file.namelist()
+        self.archive = zipfile.ZipFile(zip_path, 'r') #Необходимо повторное открытие для uniq
         self.current_dir = ''
-        self.all_files = self.archive.namelist()
         self.file_owners = {file: 'root' for file in self.all_files}
         if username == 'root':
             self.root = '#'
