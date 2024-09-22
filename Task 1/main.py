@@ -71,10 +71,8 @@ class ShellEmulator:
 
         if abs_path in self.file_owners:
             self.file_owners[abs_path] = new_owner
-            #return(f'Владелец {abs_path[:-1]} сменён на {new_owner}\n')
         elif abs_path[:-1] in self.file_owners:
             self.file_owners[abs_path[:-1]] = new_owner
-            #return(f'Владелец {abs_path[:-1]} сменён на {new_owner}\n')
         else:
             return(f'Ошибка: Неправильный путь {path}\n')
 
@@ -193,13 +191,14 @@ class Application(tk.Tk):
         self.output_area.see(tk.END)
 
 # Проверяем, что переданы аргументы
-if len(sys.argv) != 3:
-    print('Использование: py <название_программы.py> <имя_пользователя> <путь_к_архиву.zip>\n')
-    sys.exit(1)
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print('Использование: py <название_программы.py> <имя_пользователя> <путь_к_архиву.zip>\n')
+        sys.exit(1)
 
-username = sys.argv[1]
-zip_path = sys.argv[2]
-shell = ShellEmulator(username, zip_path)
+    username = sys.argv[1]
+    zip_path = sys.argv[2]
+    shell = ShellEmulator(username, zip_path)
 
-app = Application(shell)
-app.mainloop()
+    app = Application(shell)
+    app.mainloop()
