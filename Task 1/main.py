@@ -85,17 +85,12 @@ class ShellEmulator:
 
         if (abs_path in self.all_files) and (abs_path.split('.')[-1] == 'txt'):
             with self.archive.open(abs_path) as file:
-                lines = file.readlines()
-                unique_lines = []
                 previous_line = None
 
-                for line in lines:
+                for line in file:
                     if line != previous_line:
-                        unique_lines.append(line)
+                        res.append(line.decode('utf8'))
                         previous_line = line
-
-                for unique_line in unique_lines:
-                    res.append(unique_line.decode('utf8'))
             return res
         else:
             return(f'Ошибка: Неправильный путь {path}\n')
