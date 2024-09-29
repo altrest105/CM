@@ -15,7 +15,7 @@
 
 ---
 ## Запуск программы
-Для запуска программы потребуется **Git Bash**, подойдут и другие командные строки. Далее будет представлена пошаговая инструкция.
+Для запуска программы используется **Git Bash**, но подойдут и другие командные строки. Далее будет представлена пошаговая инструкция.
 1. Сначала скачиваем данный репозиторий себе на компьютер
 2. Открываем **Git Bash**, видим перед нами окно
 
@@ -33,7 +33,7 @@
 
 5. После этого откроется интерфейс программы
 
-![Интерфейс программы](https://github.com/user-attachments/assets/9df21fd0-de64-4b01-8405-81b4c90042af)
+![Интерфейс программы](https://github.com/user-attachments/assets/37f77144-3cac-46f8-828b-da854284a5f3)
 
 ---
 ## Команда ls
@@ -55,7 +55,7 @@ $ ls
 
 В скобках будет указан владелец файла.
 
-![Пример использования ls](https://github.com/user-attachments/assets/4da1def3-102d-4552-b92a-4dd2fc6b837b)
+![Пример использования ls](https://github.com/user-attachments/assets/2d6e375c-419e-4096-ad6a-a35b4a53cb18)
 
 ---
 ## Команда cd
@@ -65,7 +65,7 @@ $ ls
 
 $ cd <папка_назначения>
 
-![Пример использования cd](https://github.com/user-attachments/assets/755f5400-c155-42d0-a9a7-8174d7985970)
+![Пример использования cd](https://github.com/user-attachments/assets/a16e732e-5362-44cc-8376-3e403f7cc5fa)
 
 ---
 ## Команда pwd
@@ -75,7 +75,7 @@ $ cd <папка_назначения>
 
 $ pwd
 
-![Пример использования pwd](https://github.com/user-attachments/assets/65c2f3b0-cbe3-4927-ae0f-9f181d5219e3)
+![Пример использования pwd](https://github.com/user-attachments/assets/179018f3-e4c8-4ca1-96d3-4a271f418e42)
 
 ---
 ## Команда chown
@@ -85,7 +85,7 @@ $ pwd
 
 $ chown <новый_владелец> <файл>
 
-![Пример использования chown](https://github.com/user-attachments/assets/9b771a28-5bce-41ce-bc3e-92c30cf716a5)
+![Пример использования chown](https://github.com/user-attachments/assets/1153eab7-3796-474e-a4e0-930e415aaa3e)
 
 ---
 ## Команда uniq
@@ -95,7 +95,7 @@ $ chown <новый_владелец> <файл>
 
 $ uniq <файл>
 
-![Пример использования uniq](https://github.com/user-attachments/assets/9db50023-08c7-40ae-985d-d5b61c9e39c1)
+![Пример использования uniq](https://github.com/user-attachments/assets/5cb00335-63e4-4dad-ba1e-15a6a8060d21)
 
 ---
 ## Команда exit
