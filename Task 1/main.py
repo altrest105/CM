@@ -150,7 +150,7 @@ class Application(tk.Tk):
                 self.console.see(tk.END)
                 self.user()
                 return 'break'
-            elif len(command) == 2:
+            elif len(command) >= 2:
                 result = self.shell.command_cd(' '.join(command[1:]).rstrip())
                 self.console.insert(tk.END, '\n')
                 self.console.see(tk.END)
