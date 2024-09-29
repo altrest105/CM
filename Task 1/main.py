@@ -1,7 +1,6 @@
 import zipfile
 import sys
 import tkinter as tk
-from tkinter import scrolledtext
 
 
 class ShellEmulator:
@@ -12,7 +11,7 @@ class ShellEmulator:
         with zipfile.ZipFile(self.zip_path, 'r') as zip_file:
             self.archive = zip_file
             self.all_files = zip_file.namelist()
-        self.archive = zipfile.ZipFile(zip_path, 'r') #Необходимо повторное открытие для uniq
+        self.archive = zipfile.ZipFile(zip_path, 'r') # Необходимо повторное открытие для uniq
         self.current_dir = ''
         self.file_owners = {file: 'root' for file in self.all_files}
         if username == 'root':
@@ -95,97 +94,122 @@ class ShellEmulator:
         else:
             return(f'Ошибка: Неправильный путь {path}\n')
 
+
 class Application(tk.Tk):
     def __init__(self, shell):
         super().__init__()
         self.shell = shell
-        self.title("Shell Emulator")
-        self.geometry("800x600")
-        self.configure(bg="#1e1e1e")
+        self.title('Shell Emulator')
 
-        # Создание текстовой области для вывода результатов
-        self.output_area = scrolledtext.ScrolledText(self, bg="#2e2e2e", fg="#ffffff", font=("Consolas", 12))
-        self.output_area.place(relx=0.5, rely=0.2, relwidth=0.9, relheight=0.7, anchor="n")
+        self.console = tk.Text(self, wrap='word', bg='black', fg='white', height=20, width=80, font=("Consolas", 12))
+        self.console.pack(expand=True, fill='both')
+        self.user()
 
-        # Поле для ввода команды
-        self.entry = tk.Entry(self, bg="#2e2e2e", fg="#ffffff", font=("Consolas", 12))
-        self.entry.place(relx=0.5, rely=0.05, relwidth=0.7, anchor="n")
+        self.console.tag_configure("OKBLUE", foreground="#0000ff")
+        self.console.tag_configure("OKGREEN", foreground="#00ff00")
+        self.console.tag_configure("WARNING", foreground="#ffcc00")
+        self.console.tag_configure("FAIL", foreground="#ff0000")
+        self.console.tag_configure("OKCYAN", foreground="#00ffff")
+        self.console.tag_configure("HEADER", foreground="#ff66ff")
+        self.console.tag_configure("BOLD", font=("Consolas", 12, "bold"))
 
-        # Кнопка для выполнения команды
-        execute_button = tk.Button(self, text="Execute", command=self.execute_command, bg="#4e4e4e", fg="#ffffff", font=("Consolas", 12))
-        execute_button.place(relx=0.85, rely=0.05, anchor="n")
+        self.console.bind('<Return>', self.execute_command)
+        self.console.mark_set('insert', 'end')
 
-        self.output_area.tag_configure("OKBLUE", foreground="#0000ff")
-        self.output_area.tag_configure("OKGREEN", foreground="#00ff00")
-        self.output_area.tag_configure("WARNING", foreground="#ffcc00")
-        self.output_area.tag_configure("FAIL", foreground="#ff0000")
-        self.output_area.tag_configure("OKCYAN", foreground="#00ffff")
-        self.output_area.tag_configure("HEADER", foreground="#ff66ff")
-        self.output_area.tag_configure("BOLD", font=("Consolas", 12, "bold"))
-
-    def execute_command(self):
-        command = self.entry.get().split()
-        self.output_area.insert(tk.END, f'{self.shell.username}@localhost:~/{self.shell.current_dir}{self.shell.root} {' '.join(command)}\n')
+    def execute_command(self, event):
+        cursor_position = self.console.index(tk.INSERT)
+        command_line = self.console.get('insert linestart', cursor_position).strip()
+        command = command_line.split()[1:]
 
         if not command:
-            return  # Пустая строка
-
+            self.console.insert(tk.END, '\n')
+            self.console.see(tk.END)
+            self.console.mark_set('insert', 'end')
+            self.user()
+            return 'break'
+        
         cmd_name = command[0]
+        result = ''
 
         if cmd_name == 'ls':
             if len(command) == 1:
+                self.console.insert(tk.END, '\n')
                 result = self.shell.command_ls()
                 for item in result:
-                    self.output_area.insert(tk.END, item[0], item[1])
-                self.entry.delete(0, tk.END)
-                self.output_area.see(tk.END)
-                return
+                    self.console.insert(tk.END, item[0], item[1])
+                self.console.see(tk.END)
+                self.user()
+                return 'break'
             else:
-                result = 'Использование: ls\n'
+                result = '\nИспользование: ls\n'
 
         elif cmd_name == 'cd':
             if len(command) == 1:
                 result = self.shell.command_cd()
+                self.console.insert(tk.END, '\n')
+                self.console.see(tk.END)
+                self.user()
+                return 'break'
             elif len(command) == 2:
                 result = self.shell.command_cd(' '.join(command[1:]).rstrip())
+                self.console.insert(tk.END, '\n')
+                self.console.see(tk.END)
+                self.user()
+                return 'break'
             else:
-                result = 'Использование: cd <папка_назначения>\n'
+                result = '\nИспользование: cd <папка_назначения>\n'
 
         elif cmd_name == 'pwd':
             if len(command) == 1:
-                result = self.shell.command_pwd()
+                result = f'\n{self.shell.command_pwd()}\n'
             else:
-                result = 'Использование: pwd\n'
+                result = '\nИспользование: pwd\n'
 
         elif cmd_name == 'exit':
             if len(command) == 1:
-                exit() #self.quit()
+                self.quit()
+                return 'break'
             else:
-                result = 'Использование: exit\n'
+                result = '\nИспользование: exit\n'
 
         elif cmd_name == 'chown':
             if len(command) == 3:
                 result = self.shell.command_chown(command[1], command[2])
+                self.console.insert(tk.END, '\n')
+                self.console.see(tk.END)
+                self.user()
+                return 'break'
             else:
-                result = 'Использование: chown <новый_владелец> <файл>\n'
+                result = '\nИспользование: chown <новый_владелец> <файл>\n'
 
         elif cmd_name == 'uniq':
             if len(command) == 2:
                 result = self.shell.command_uniq(command[1])
+                self.console.insert(tk.END, '\n')
                 for item in result:
-                    self.output_area.insert(tk.END, item)
-                self.entry.delete(0, tk.END)
-                self.output_area.see(tk.END)
-                return
+                    self.console.insert(tk.END, item)
+                self.console.insert(tk.END, '\n')
+                self.console.see(tk.END)
+                self.user()
+                return 'break'
             else:
-                result = 'Использование: uniq <файл>\n'
+                result = '\nИспользование: uniq <файл>\n'
 
         else:
-            result = 'Неизвестная команда, попробуйте снова!\n'
+            result = '\nНеизвестная команда, попробуйте снова!\n'
         
-        self.entry.delete(0, tk.END)
-        self.output_area.insert(tk.END, result)
-        self.output_area.see(tk.END)
+        self.console.insert(tk.END, result)
+        self.console.see(tk.END)
+        self.user()
+        self.console.mark_set('insert', 'end')
+
+        return 'break'
+
+    def user(self):
+        self.console.insert(tk.END, f'{self.shell.username}@localhost:~/{self.shell.current_dir}{self.shell.root} ')
+        self.console.see(tk.END)
+        self.console.mark_set('insert', 'end')
+
 
 # Проверяем, что переданы аргументы
 if __name__ == '__main__':
