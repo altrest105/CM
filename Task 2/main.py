@@ -50,12 +50,14 @@ def build_dependency_graph(package, graph, visited, distro):
         build_dependency_graph(dep, graph, visited, distro)
 
 # Генерация PlantUML файла для графа зависимостей
-def generate_plantuml(graph):
+def generate_plantuml(graph, package):
     uml = "@startuml\n"
     uml += "skinparam linetype ortho\n"
-    
-    for parent, child in graph:
-        uml += f'"{parent}" --> "{child}"\n'
+    if len(graph) == 0:
+        uml += f'"{package}"\n'
+    else:
+        for parent, child in graph:
+            uml += f'"{parent}" --> "{child}"\n'
     
     uml += "@enduml\n"
     return uml
@@ -66,19 +68,32 @@ def read_config(config_file):
         config = yaml.safe_load(file)
     return config
 
+# Получение пакета и дистрибутива из URL-адреса репозитория
+def extract_distro_and_package(url):
+    pattern = r'https://packages.ubuntu.com/([^/]+)/([^/]+)'
+    match = re.search(pattern, url)
+    
+    if match:
+        distro = match.group(1) 
+        package = match.group(2)
+        return distro, package
+    else:
+        raise ValueError("Неверный формат URL")
+
 def main(config_file):
     config = read_config(config_file)
 
     plantuml_path = config['visualizer_path']  # Путь к программе визуализации
-    package_name = config['package']  # Имя пакета для анализа
+    package_path = config['package_path']  # Путь к пакету для анализа
     repository = config['repository'] # Репозиторий пакета
-    distro = 'noble' # Дистрибутив
+
+    distro, package_name = extract_distro_and_package(repository)
 
     graph = []
     visited = set()
     build_dependency_graph(package_name, graph, visited, distro)
     
-    plantuml_content = generate_plantuml(graph)
+    plantuml_content = generate_plantuml(graph, package_name)
 
     with open('dependencies.puml', 'w') as file:
         file.write(plantuml_content)
