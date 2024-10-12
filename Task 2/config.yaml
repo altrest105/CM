@@ -1,0 +1,3 @@
+visualizer_path: /usr/bin/plantuml
+package: curl
+repository: https://packages.ubuntu.com/focal/curl
