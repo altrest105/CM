@@ -32,9 +32,10 @@ def get_depends(info):
     end = info.find('</div> <!-- end pdeps -->')
     info = info[start:end]
 
-    pattern = r'<dt><span class="nonvisual">dep:</span>\n\t<a href="[^"]*/[^"]*/([^"]*)"'
+    pattern = r'<dt><span class="nonvisual">dep:</span>\s*<a href="[^"]*/[^"]*/([^"]*)"'
     matches = set(re.findall(pattern, info))
     return sorted(list(matches))
+
 
 # Создание графа
 def build_dependency_graph(package, graph, visited, distro):
