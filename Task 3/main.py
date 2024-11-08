@@ -7,20 +7,26 @@ def is_name(name):
 
 def convert_value(value):
     if isinstance(value, dict):
-        return 'table(\n' + ',\n'.join(f'{key} => {convert_value(value)}' for key, value in value.items()) + '\n)'
+        return 'table(\n' + ',\n'.join(f'\t{key} => {convert_value(value)}' for key, value in value.items()) + '\n)'
     elif isinstance(value, str):
         return f'@"{value}"'
     elif isinstance(value, (int, float)):
         return value
     else:
-        raise ValueError
+        raise ValueError(f'Неподдерживаемый тип значения: {type(value)}')
 
-def convert_yaml():
-    exit()
+def convert_yaml(yaml):
+    res = []
+    
+    for key, value in yaml.items():
+        if not(is_name(key)):
+            raise ValueError(f'Некорректное имя: {key}')
+        res.append(f'var {key} {convert_value(value)}')
+    return '\n'.join(res)
 
 def main():
     if len(sys.argv) != 2:
-        print('Использование: python main.py <путь_к_yaml_файлу>')
+        print('Использование: python <программа.py> <файл.yaml>')
         sys.exit(1)
 
     input_path = sys.argv[1]
@@ -33,8 +39,9 @@ def main():
         print(f'Ошибка в yaml: {error}')
     except ValueError as error:
         print(f'Ошибка конвертации: {error}')
-    
-    print(yaml_data)
+
+    result = convert_yaml(yaml_data)
+    print(result)
 
 if __name__ == '__main__':
     main()
