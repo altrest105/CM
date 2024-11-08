@@ -1,5 +1,9 @@
+timeout: 300
+message: "Operation successful"
+delay: "[timeout]"
 database:
-  host: localhost
+  host: "localhost"
   port: 5432
-  user: admin
-  password: secret
+  credentials:
+    username: "admin"
+    password: "secret"
