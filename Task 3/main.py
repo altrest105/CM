@@ -2,6 +2,19 @@ import sys
 import yaml
 import re
 
+def convert_value(value):
+    if isinstance(value, dict):
+        return 'table(\n' + ',\n'.join(f'{key} => {convert_value(value)}' for key, value in value.items()) + '\n)'
+    elif isinstance(value, str):
+        return f'@"{value}"'
+    elif isinstance(value, (int, float)):
+        return value
+    else:
+        raise ValueError
+
+def convert_yaml():
+    exit()
+
 def main():
     if len(sys.argv) != 2:
         print('Использование: python main.py <путь_к_yaml_файлу>')
