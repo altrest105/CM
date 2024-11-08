@@ -2,6 +2,9 @@ import sys
 import yaml
 import re
 
+def is_name(name):
+    return re.match(r'^[_a-z]+$', name)
+
 def convert_value(value):
     if isinstance(value, dict):
         return 'table(\n' + ',\n'.join(f'{key} => {convert_value(value)}' for key, value in value.items()) + '\n)'
