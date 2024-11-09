@@ -35,7 +35,6 @@ def convert_yaml(yaml_data):
             variables[key] = value
 
         result.append(f'var {key} {convert_value(value)};')
-    print(result)
     return '\n'.join(result)
 
 def main():
