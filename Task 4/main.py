@@ -81,7 +81,7 @@ class Interpreter:
         self.binary_file = binary_file
         self.result_file = result_file
         self.memory_range = memory_range
-        self.memory = [0] * 1024
+        self.memory = ['0'] * 1024
         self.accumulator = 0
     
     # Перевод 
