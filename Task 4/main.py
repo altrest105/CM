@@ -83,20 +83,6 @@ class Interpreter:
         self.memory_range = memory_range
         self.memory = ['0'] * 1024
         self.accumulator = 0
-    
-    # Перевод 
-    def hex_to_bin(self, bytes):
-        bytes = ' '.join(bytes).replace('0x', '').replace(' ', '')
-        hex_to_bin_map = {
-            '0': '0000', '1': '0001', '2': '0010', '3': '0011', '4': '0100', '5': '0101',
-            '6': '0110', '7': '0111', '8': '1000', '9': '1001', 'A': '1010', 'B': '1011',
-            'C': '1100', 'D': '1101', 'E': '1110', 'F': '1111'
-        }
-        binary = ''
-        for s in bytes:
-            binary += hex_to_bin_map[s]
-        return binary
-
 
     def execute(self):
         instructions = []
@@ -109,7 +95,21 @@ class Interpreter:
         self.execute_instructions(instructions)
 
         self.write_results(self.result_file, self.memory_range)
+    
+    # Перевод из 16-ричной записи в двоичную строку
+    def hex_to_bin(self, bytes):
+        bytes = ' '.join(bytes).replace('0x', '').replace(' ', '')
+        hex_to_bin_map = {
+            '0': '0000', '1': '0001', '2': '0010', '3': '0011', '4': '0100', '5': '0101',
+            '6': '0110', '7': '0111', '8': '1000', '9': '1001', 'A': '1010', 'B': '1011',
+            'C': '1100', 'D': '1101', 'E': '1110', 'F': '1111'
+        }
+        binary = ''
+        for s in bytes:
+            binary += hex_to_bin_map[s]
+        return binary
 
+    # Выполнение инструкций
     def execute_instructions(self, binary):
         i = 0
         while i < len(binary):
@@ -138,23 +138,27 @@ class Interpreter:
             else:
                 raise ValueError(f'Неизвестная команда: {a}')
 
-
+    # LOAD_CONST
     def load_const(self, a, b):
         print(f"LOAD_CONST: a={a}, b={b}")
         self.accumulator = bin(b)[2:]
     
+    #READ_MEMORY
     def read_memory(self, a, b):
         print(f"READ_MEMORY: a={a}, b={b}")
         self.accumulator = self.memory[b]
     
+    #WRITE_MEMORY
     def write_memory(self, a, b):
         print(f"WRITE_MEMORY: a={a}, b={b}")
         self.memory[b] = self.accumulator
 
+    #BITREVERSE
     def bit_reverse(self, a, b):
         print(f"BITREVERSE: a={a}, b={b}")
         self.accumulator = self.memory[b][::-1]
 
+    # Запись результатов
     def write_results(self, result_file, memory_range):
         root = ET.Element("results")
         for i in range(*memory_range):
